@@ -1,0 +1,151 @@
+{
+  "users": {
+    "12345": {
+      "profile": {
+        "name": "সাগর মন্ডল",
+        "timezone": "Asia/Dhaka",
+        "reminder_interval": 10,
+        "created": "2025-08-17T22:15:09.565725+00:00"
+      },
+      "routines": [
+        {
+          "id": "routine_1_20250817221601",
+          "name": "সকালের নাস্তা",
+          "time": "08:00",
+          "days": [],
+          "type": "daily",
+          "reminder_intervals": [
+            15,
+            30
+          ],
+          "active": true,
+          "created": "2025-08-17T22:16:01.048904+00:00",
+          "last_completed": null
+        },
+        {
+          "id": "routine_2_20250817221601",
+          "name": "সাপ্তাহিক বাজার",
+          "time": "10:00",
+          "days": [
+            "saturday",
+            "tuesday"
+          ],
+          "type": "weekly",
+          "reminder_intervals": [
+            60
+          ],
+          "active": true,
+          "created": "2025-08-17T22:16:01.049450+00:00",
+          "last_completed": null
+        }
+      ],
+      "tasks": [
+        {
+          "id": "task_1_20250817221601",
+          "name": "ডাক্তারের সাথে অ্যাপয়েন্টমেন্ট",
+          "deadline": "2024-12-30 15:30",
+          "reminder_intervals": [
+            15,
+            30,
+            60
+          ],
+          "completed": false,
+          "created": "2025-08-17T22:16:01.050021+00:00",
+          "completed_at": null
+        },
+        {
+          "id": "task_2_20250817221601",
+          "name": "বই পড়া",
+          "deadline": null,
+          "reminder_intervals": [
+            15
+          ],
+          "completed": true,
+          "created": "2025-08-17T22:16:01.050604+00:00",
+          "completed_at": "2025-08-17T22:16:01.051364+00:00"
+        }
+      ],
+      "stats": {
+        "total_routines": 2,
+        "total_tasks": 2,
+        "completed_tasks": 1,
+        "last_activity": "2025-08-17T22:16:01.051369+00:00"
+      }
+    },
+    "98765": {
+      "profile": {
+        "name": "",
+        "timezone": "Asia/Kolkata",
+        "reminder_interval": 15,
+        "created": "2025-08-17T22:17:40.700457+00:00"
+      },
+      "routines": [
+        {
+          "id": "routine_1_20250817221740",
+          "name": "ফজরের নামাজ",
+          "time": "05:30",
+          "days": [],
+          "type": "daily",
+          "reminder_intervals": [
+            15,
+            30
+          ],
+          "active": true,
+          "created": "2025-08-17T22:17:40.700961+00:00",
+          "last_completed": null
+        }
+      ],
+      "tasks": [
+        {
+          "id": "task_1_20250817221740",
+          "name": "ব্যাংকে টাকা জমা দেওয়া",
+          "deadline": "2024-12-25 16:00",
+          "reminder_intervals": [
+            30,
+            60
+          ],
+          "completed": true,
+          "created": "2025-08-17T22:17:40.702099+00:00",
+          "completed_at": "2025-08-17T22:17:40.702714+00:00"
+        }
+      ],
+      "stats": {
+        "total_routines": 1,
+        "total_tasks": 1,
+        "completed_tasks": 1,
+        "last_activity": "2025-08-17T22:17:40.702721+00:00"
+      }
+    },
+    "54321": {
+      "profile": {
+        "name": "",
+        "timezone": "Asia/Kolkata",
+        "reminder_interval": 15,
+        "created": "2025-08-17T22:19:29.015280+00:00"
+      },
+      "routines": [],
+      "tasks": [],
+      "stats": {
+        "total_routines": 0,
+        "total_tasks": 0,
+        "completed_tasks": 0,
+        "last_activity": "2025-08-17T22:19:29.015289+00:00"
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "description": "Ultra-modern Bengali Telegram Bot for routine and task management",
+    "created": "2024-01-01T00:00:00.000Z",
+    "last_backup": "2025-08-17T22:19:29.015484+00:00",
+    "features": [
+      "Routine management with Bengali UI",
+      "Quick task management",
+      "Smart reminder system",
+      "Local JSON database with auto-backup",
+      "Windows-compatible UTF-8 encoding",
+      "Settings and statistics",
+      "Beautiful Bengali interface with emojis"
+    ]
+  }
+}
