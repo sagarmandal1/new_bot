@@ -1,1 +1,10 @@
-{}
+{
+  "12345": {
+    "name": "টেস্ট ইউজার",
+    "age": 25,
+    "language": "bengali",
+    "created_at": "2025-08-17T22:37:10.609228",
+    "is_active": true,
+    "notifications_enabled": true
+  }
+}
