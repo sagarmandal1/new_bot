@@ -1,0 +1,9 @@
+{
+    "bot_token": "YOUR_BOT_TOKEN_HERE",
+    "admin_user_ids": [123456789],
+    "timezone": "Asia/Dhaka",
+    "backup_interval_hours": 24,
+    "reminder_check_interval_minutes": 5,
+    "default_language": "bengali",
+    "supported_languages": ["bengali", "english"]
+}
