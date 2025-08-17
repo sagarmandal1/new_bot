@@ -1,0 +1,18 @@
+{
+  "users": {},
+  "metadata": {
+    "version": "1.0",
+    "description": "Ultra-modern Bengali Telegram Bot for routine and task management",
+    "created": "2024-01-01T00:00:00.000Z",
+    "last_backup": null,
+    "features": [
+      "Routine management with Bengali UI",
+      "Quick task management",
+      "Smart reminder system",
+      "Local JSON database with auto-backup",
+      "Windows-compatible UTF-8 encoding",
+      "Settings and statistics",
+      "Beautiful Bengali interface with emojis"
+    ]
+  }
+}
