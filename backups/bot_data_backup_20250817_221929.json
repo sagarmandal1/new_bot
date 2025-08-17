@@ -123,31 +123,13 @@
         "reminder_interval": 15,
         "created": "2025-08-17T22:19:29.015280+00:00"
       },
-      "routines": [
-        {
-          "id": "routine_1_20250817221929",
-          "name": "সাপ্তাহিক পরিষ্কার",
-          "time": "09:00",
-          "days": [
-            "friday",
-            "sunday"
-          ],
-          "type": "weekly",
-          "reminder_intervals": [
-            30,
-            60
-          ],
-          "active": true,
-          "created": "2025-08-17T22:19:29.015838+00:00",
-          "last_completed": null
-        }
-      ],
+      "routines": [],
       "tasks": [],
       "stats": {
-        "total_routines": 1,
+        "total_routines": 0,
         "total_tasks": 0,
         "completed_tasks": 0,
-        "last_activity": "2025-08-17T22:19:29.015845+00:00"
+        "last_activity": "2025-08-17T22:19:29.015289+00:00"
       }
     }
   },
@@ -155,7 +137,7 @@
     "version": "1.0",
     "description": "Ultra-modern Bengali Telegram Bot for routine and task management",
     "created": "2024-01-01T00:00:00.000Z",
-    "last_backup": "2025-08-17T22:19:29.015989+00:00",
+    "last_backup": "2025-08-17T22:19:29.015484+00:00",
     "features": [
       "Routine management with Bengali UI",
       "Quick task management",

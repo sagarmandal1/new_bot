@@ -132,6 +132,28 @@ class BotHandlers:
         elif data.startswith('delete_routine_'):
             routine_id = data.replace('delete_routine_', '')
             await self.confirm_delete_routine(query, user_id, routine_id)
+        elif data.startswith('confirm_delete_task_'):
+            task_id = data.replace('confirm_delete_task_', '')
+            await self.delete_task_confirmed(query, user_id, task_id)
+        elif data.startswith('confirm_delete_routine_'):
+            routine_id = data.replace('confirm_delete_routine_', '')
+            await self.delete_routine_confirmed(query, user_id, routine_id)
+        
+        # Routine type selection
+        elif data == 'type_daily':
+            await self.handle_routine_type_selection(query, user_id, 'daily', context)
+        elif data == 'type_weekly':
+            await self.handle_routine_type_selection(query, user_id, 'weekly', context)
+        
+        # Day selection for weekly routines
+        elif data.startswith('day_'):
+            day = data.replace('day_', '')
+            await self.toggle_day_selection(query, user_id, day)
+        
+        # Reminder interval selection
+        elif data.startswith('interval_'):
+            interval = int(data.replace('interval_', ''))
+            await self.toggle_interval_selection(query, user_id, interval)
         
         # Settings
         elif data == 'change_name':
@@ -144,6 +166,10 @@ class BotHandlers:
         # Cancel operations
         elif data == 'cancel':
             await self.cancel_operation(query, user_id, context)
+        
+        # Save operations
+        elif data == 'save':
+            await self.handle_save_operation(query, user_id, context)
     
     async def show_main_menu(self, query, user_id):
         """Show main menu"""
@@ -315,18 +341,158 @@ class BotHandlers:
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
     
-    async def confirm_delete_routine(self, query, user_id, routine_id):
-        """Confirm routine deletion"""
+    async def delete_task_confirmed(self, query, user_id, task_id):
+        """Actually delete the task after confirmation"""
+        try:
+            self.storage.delete_task(user_id, task_id)
+            await query.edit_message_text(
+                self.text['item_deleted'],
+                reply_markup=self.ui.get_back_only_keyboard()
+            )
+        except Exception as e:
+            logger.error(f"Error deleting task: {e}")
+            await query.edit_message_text(
+                self.text['error_occurred'],
+                reply_markup=self.ui.get_back_only_keyboard()
+            )
+    
+    async def delete_routine_confirmed(self, query, user_id, routine_id):
+        """Actually delete the routine after confirmation"""
+        try:
+            self.storage.delete_routine(user_id, routine_id)
+            await query.edit_message_text(
+                self.text['item_deleted'],
+                reply_markup=self.ui.get_back_only_keyboard()
+            )
+        except Exception as e:
+            logger.error(f"Error deleting routine: {e}")
+            await query.edit_message_text(
+                self.text['error_occurred'],
+                reply_markup=self.ui.get_back_only_keyboard()
+            )
+    
+    async def show_routine_details(self, query, user_id, routine_id):
+        """Show detailed view of a routine"""
+        routines = self.storage.get_user_routines(user_id)
+        routine = next((r for r in routines if r['id'] == routine_id), None)
+        
+        if not routine:
+            await query.edit_message_text(
+                self.text['no_items_found'],
+                reply_markup=self.ui.get_back_only_keyboard()
+            )
+            return
+        
+        routine_details = self.ui.format_routine_details(routine)
+        
+        # Create action buttons for this routine
         keyboard = [
             [
-                InlineKeyboardButton(f"{self.emojis['delete']} নিশ্চিত মুছুন", callback_data=f"confirm_delete_routine_{routine_id}"),
-                InlineKeyboardButton(self.text['btn_cancel'], callback_data='routines')
+                InlineKeyboardButton(f"{self.emojis['edit']} সম্পাদনা", callback_data=f"edit_routine_{routine_id}"),
+                InlineKeyboardButton(f"{self.emojis['delete']} মুছুন", callback_data=f"delete_routine_{routine_id}")
+            ],
+            [
+                InlineKeyboardButton(self.text['btn_back'], callback_data='view_routines')
             ]
         ]
         
         await query.edit_message_text(
-            f"{self.emojis['warning']} আপনি কি নিশ্চিত যে এই রুটিনটি মুছে ফেলতে চান?",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            routine_details,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode='Markdown'
+        )
+    
+    async def handle_routine_type_selection(self, query, user_id, routine_type, context):
+        """Handle routine type selection (daily/weekly)"""
+        if user_id not in self.temp_data:
+            await query.edit_message_text(
+                self.text['error_occurred'],
+                reply_markup=self.ui.get_main_menu_keyboard()
+            )
+            return
+        
+        self.temp_data[user_id]['routine_type'] = routine_type
+        
+        if routine_type == 'daily':
+            # For daily routines, create immediately
+            try:
+                routine_data = {
+                    'name': self.temp_data[user_id]['routine_name'],
+                    'time': self.temp_data[user_id]['routine_time'],
+                    'type': 'daily',
+                    'reminder_intervals': [15]  # Default
+                }
+                
+                routine_id = self.storage.add_routine(user_id, routine_data)
+                
+                # Clean up temp data
+                del self.temp_data[user_id]
+                
+                await query.edit_message_text(
+                    self.text['routine_created'],
+                    reply_markup=self.ui.get_main_menu_keyboard()
+                )
+            except Exception as e:
+                logger.error(f"Error creating routine: {e}")
+                await query.edit_message_text(
+                    self.text['error_occurred'],
+                    reply_markup=self.ui.get_main_menu_keyboard()
+                )
+        
+        elif routine_type == 'weekly':
+            # For weekly routines, ask for days
+            self.temp_data[user_id]['selected_days'] = []
+            await query.edit_message_text(
+                self.text['select_days'],
+                reply_markup=self.ui.get_days_selection_keyboard()
+            )
+    
+    async def toggle_day_selection(self, query, user_id, day):
+        """Toggle day selection for weekly routines"""
+        if user_id not in self.temp_data:
+            await query.edit_message_text(
+                self.text['error_occurred'],
+                reply_markup=self.ui.get_main_menu_keyboard()
+            )
+            return
+        
+        selected_days = self.temp_data[user_id].get('selected_days', [])
+        
+        if day in selected_days:
+            selected_days.remove(day)
+        else:
+            selected_days.append(day)
+        
+        self.temp_data[user_id]['selected_days'] = selected_days
+        
+        # Update the keyboard to show current selection
+        await query.edit_message_text(
+            self.text['select_days'],
+            reply_markup=self.ui.get_days_selection_keyboard(selected_days)
+        )
+    
+    async def toggle_interval_selection(self, query, user_id, interval):
+        """Toggle reminder interval selection"""
+        if user_id not in self.temp_data:
+            # This might be called from settings, handle gracefully
+            user_data = self.storage.get_user_data(user_id)
+            current_intervals = [user_data['profile']['reminder_interval']]
+        else:
+            current_intervals = self.temp_data[user_id].get('selected_intervals', [15])
+        
+        if interval in current_intervals:
+            if len(current_intervals) > 1:  # Keep at least one interval
+                current_intervals.remove(interval)
+        else:
+            current_intervals.append(interval)
+        
+        if user_id in self.temp_data:
+            self.temp_data[user_id]['selected_intervals'] = current_intervals
+        
+        # Update the keyboard
+        await query.edit_message_text(
+            f"{self.emojis['reminder']} রিমাইন্ডার ইন্টারভ্যাল নির্বাচন করুন:",
+            reply_markup=self.ui.get_reminder_intervals_keyboard(current_intervals)
         )
     
     # Conversation handlers for complex operations
@@ -370,6 +536,62 @@ class BotHandlers:
             self.text['operation_cancelled'],
             reply_markup=self.ui.get_main_menu_keyboard()
         )
+        
+        return ConversationHandler.END
+    
+    async def handle_save_operation(self, query, user_id, context):
+        """Handle save operations for various contexts"""
+        if user_id not in self.temp_data:
+            await query.edit_message_text(
+                self.text['operation_cancelled'],
+                reply_markup=self.ui.get_main_menu_keyboard()
+            )
+            return ConversationHandler.END
+        
+        temp_data = self.temp_data[user_id]
+        
+        # Save weekly routine with selected days
+        if 'routine_type' in temp_data and temp_data['routine_type'] == 'weekly':
+            selected_days = temp_data.get('selected_days', [])
+            
+            if not selected_days:
+                await query.edit_message_text(
+                    f"{self.emojis['warning']} অন্তত একটি দিন নির্বাচন করুন।",
+                    reply_markup=self.ui.get_days_selection_keyboard()
+                )
+                return
+            
+            try:
+                routine_data = {
+                    'name': temp_data['routine_name'],
+                    'time': temp_data['routine_time'],
+                    'type': 'weekly',
+                    'days': selected_days,
+                    'reminder_intervals': temp_data.get('selected_intervals', [15])
+                }
+                
+                routine_id = self.storage.add_routine(user_id, routine_data)
+                
+                # Clean up temp data
+                del self.temp_data[user_id]
+                
+                await query.edit_message_text(
+                    self.text['routine_created'],
+                    reply_markup=self.ui.get_main_menu_keyboard()
+                )
+            except Exception as e:
+                logger.error(f"Error creating weekly routine: {e}")
+                await query.edit_message_text(
+                    self.text['error_occurred'],
+                    reply_markup=self.ui.get_main_menu_keyboard()
+                )
+        
+        # Handle other save operations here
+        else:
+            await query.edit_message_text(
+                self.text['settings_saved'],
+                reply_markup=self.ui.get_main_menu_keyboard()
+            )
         
         return ConversationHandler.END
     
