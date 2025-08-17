@@ -270,16 +270,16 @@
           "reminder_intervals": [
             60
           ],
-          "completed": true,
+          "completed": false,
           "created": "2025-08-17T22:20:40.270919+00:00",
-          "completed_at": "2025-08-17T22:20:40.271635+00:00"
+          "completed_at": null
         }
       ],
       "stats": {
         "total_routines": 1,
         "total_tasks": 1,
-        "completed_tasks": 1,
-        "last_activity": "2025-08-17T22:20:40.271640+00:00"
+        "completed_tasks": 0,
+        "last_activity": "2025-08-17T22:20:40.270925+00:00"
       }
     }
   },
@@ -287,7 +287,7 @@
     "version": "1.0",
     "description": "Ultra-modern Bengali Telegram Bot for routine and task management",
     "created": "2024-01-01T00:00:00.000Z",
-    "last_backup": "2025-08-17T22:20:40.271774+00:00",
+    "last_backup": "2025-08-17T22:20:40.271061+00:00",
     "features": [
       "Routine management with Bengali UI",
       "Quick task management",
