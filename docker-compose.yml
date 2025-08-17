@@ -1,0 +1,79 @@
+# Docker Compose for Bengali Telegram Bot
+# বাংলা টেলিগ্রাম বট - ডকার কম্পোজ
+
+version: '3.8'
+
+services:
+  # Main bot service
+  bengali-bot:
+    build: .
+    container_name: bengali_telegram_bot
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - DATABASE_URL=postgresql://bot_user:bot_password@db:5432/bengali_bot
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_USER_IDS=${ADMIN_USER_IDS}
+      - DEBUG=False
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      - db
+      - redis
+    networks:
+      - bot-network
+
+  # PostgreSQL database
+  db:
+    image: postgres:15-alpine
+    container_name: bengali_bot_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=bengali_bot
+      - POSTGRES_USER=bot_user
+      - POSTGRES_PASSWORD=bot_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - bot-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: bengali_bot_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - bot-network
+
+  # Nginx for webhook (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: bengali_bot_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - bengali-bot
+    networks:
+      - bot-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  bot-network:
+    driver: bridge

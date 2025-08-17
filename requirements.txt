@@ -1,0 +1,7 @@
+# Core telegram bot requirements
+python-telegram-bot>=20.0
+sqlalchemy>=2.0.0
+python-dotenv>=1.0.0
+cryptography>=40.0.0
+python-dateutil>=2.8.0
+pytz>=2023.0
